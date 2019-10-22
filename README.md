@@ -5,6 +5,7 @@ MizoERP is an open source ERP Cloud.
 ### ENV FILE PARAMS
 PORT
 DB_HOST
+DB_PORT
 DB_NAME
 DB_USERNAME
 DB_PASSWD

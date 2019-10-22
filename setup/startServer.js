@@ -3,6 +3,8 @@ import bodyParser from 'body-parser';
 import { ApolloServer, PubSub } from 'apollo-server-express';
 import typeDefs from '../graphql/types';
 import resolvers from '../graphql/resolvers';
+import models from '../models/index'; //NEEDED TO SYNC ALL MODELS
+import sequelize from '../setup/sequelize';
 import { authMiddleware } from './middlewares';
 import logger from '../utils/logger';
 
@@ -56,17 +58,32 @@ export default (app) => {
 
     const server = createServer(app);
     apollo.installSubscriptionHandlers(server);
-    server.listen((process.env.PORT), () => {
-        logger.info('*******************************************************************');
-        logger.info('*                                                                 *');
-        logger.info('*  ███╗   ███╗██╗███████╗ ██████╗       ███████╗██████╗ ██████╗   *');
-        logger.info('*  ████╗ ████║██║╚══███╔╝██╔═══██╗      ██╔════╝██╔══██╗██╔══██╗  *');
-        logger.info('*  ██╔████╔██║██║  ███╔╝ ██║   ██║█████╗█████╗  ██████╔╝██████╔╝  *');
-        logger.info('*  ██║╚██╔╝██║██║ ███╔╝  ██║   ██║╚════╝██╔══╝  ██╔══██╗██╔═══╝   *');
-        logger.info('*  ██║ ╚═╝ ██║██║███████╗╚██████╔╝      ███████╗██║  ██║██║       *');
-        logger.info('*  ╚═╝     ╚═╝╚═╝╚══════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═╝       *');
-        logger.info('*                                                                 *');
-        logger.info('*******************************************************************');
-        logger.info(`🚀  Server ready on PORT ${process.env.PORT}, GRAPHQL_PATH at ${apollo.graphqlPath} and SUBSCRIPTIONS ON ${apollo.subscriptionsPath}`);
+
+    sequelize.authenticate().then(() => {
+        logger.info('[INFO] - Database connected.');
+        sequelize.sync().then(() => {
+            logger.info('[INFO] - Database sync.');
+            server.listen((process.env.PORT), () => {
+                logger.info('*******************************************************************');
+                logger.info('*                                                                 *');
+                logger.info('*  ███╗   ███╗██╗███████╗ ██████╗       ███████╗██████╗ ██████╗   *');
+                logger.info('*  ████╗ ████║██║╚══███╔╝██╔═══██╗      ██╔════╝██╔══██╗██╔══██╗  *');
+                logger.info('*  ██╔████╔██║██║  ███╔╝ ██║   ██║█████╗█████╗  ██████╔╝██████╔╝  *');
+                logger.info('*  ██║╚██╔╝██║██║ ███╔╝  ██║   ██║╚════╝██╔══╝  ██╔══██╗██╔═══╝   *');
+                logger.info('*  ██║ ╚═╝ ██║██║███████╗╚██████╔╝      ███████╗██║  ██║██║       *');
+                logger.info('*  ╚═╝     ╚═╝╚═╝╚══════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═╝       *');
+                logger.info('*                                                                 *');
+                logger.info('*******************************************************************');
+                logger.info(`🚀  Server ready on PORT ${process.env.PORT}, GRAPHQL_PATH at ${apollo.graphqlPath} and SUBSCRIPTIONS ON ${apollo.subscriptionsPath}`);
+            });
+        })
+        .catch(error => {
+            throw new Error(error);
+        });
+    })
+    .catch(error => {
+        logger.error(`[ERROR] - Unable to connect to the database: ${error}`);
+        logger.error('[ERROR] - SERVER NOT STARTED');
+        throw new Error(error);
     });
 };

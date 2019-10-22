@@ -1,0 +1,13 @@
+# This "Book" type can be used in other type declarations.
+type Translation {
+    id: Int
+    label: String
+    es: String
+    en: String
+}
+
+# The "Query" type is the root of all GraphQL queries.
+# (A "Mutation" type will be covered later on.)
+type Query {
+    translations(language: Languages!): [Translation]
+}

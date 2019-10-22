@@ -6,16 +6,23 @@ const sequelize = new Sequelize(
 	process.env.DB_PASSWD,
 	{
 		host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
 		dialect: "postgres",
 		pool: {
-			max: 5,
-			min: 0,
-			acquire: 30000,
-			idle: 10000
-		},
-		retry: {
-			max: 5
-		}
+            max: 10,
+            min: 1,
+            idle: 10000,
+            acquire: 10000,
+            evict: 60000,
+            handleDisconnects: true
+        },
+        //logging: false,
+        retry: {
+            max: 5
+        },
+        define: {
+            timestamps: false
+        }
 	}
 );
 

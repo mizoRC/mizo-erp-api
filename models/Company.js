@@ -50,10 +50,11 @@ const Company = sequelize.define('company',
             allowNull: true,
             defaultValue: true,
         }
-    }, 
-    {
-        timestamps: false
-    }
+    },
+	{
+		modelName: "company",
+		tableName: "companies"
+	}
 );
 
 module.exports = Company;
