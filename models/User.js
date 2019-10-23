@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../setup/sequelize';
-import User from './User';
+import Company from './Company';
 
-const Company = sequelize.define('company', 
+const User = sequelize.define('user', 
     {
         id: {
             type: DataTypes.INTEGER,
@@ -14,36 +14,21 @@ const Company = sequelize.define('company',
             type: DataTypes.STRING,
             allowNull: false
         },
-        tin: {
+        surname: {
             type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: ''
+            allowNull: false
         },
-        country: {
+        email: {
             type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: ''
+            allowNull: false
         },
-        address: {
+        password: {
             type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: ''
+            allowNull: false
         },
-        phone: {
+        language: {
             type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: ''
-        },
-        logo: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: ''
-        },
-        domain: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: '',
-            field: 'domain'
+            allowNull: false
         },
         creationDate:{
             type: DataTypes.DATE,
@@ -55,14 +40,22 @@ const Company = sequelize.define('company',
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: true,
+        },
+        // foreign keys:
+        companyId: {
+            type: DataTypes.INTEGER,
+            references: {
+                // This is a reference to another model
+                model: Company,
+                // This is the column name of the referenced model
+                key: 'id'
+            }
         }
     },
 	{
-		modelName: "company",
-		tableName: "companies"
+		modelName: "user",
+		tableName: "users"
 	}
 );
 
-Company.hasMany(User, {as: 'users'});
-
-module.exports = Company;
+module.exports = User;

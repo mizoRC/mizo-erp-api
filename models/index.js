@@ -9,7 +9,7 @@ let models = {};
 
 modelFiles.forEach(modelFile => {
     let model = modelFile.replace('models/', '');
-    model = model.replace('models\\', '');//For windows
+    //model = model.replace('models\\', '');//For windows
 
     try {
         const modelPath = `./${model}`;

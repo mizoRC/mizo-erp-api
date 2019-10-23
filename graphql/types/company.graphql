@@ -3,12 +3,30 @@ type Company {
     id: Int
     name: String
     tin: String
+    country: String
     address: String
     phone: String
     logo: String
     domain: String
     creationDate: String
     active: String
+}
+
+input RegisterInfo {
+    name: String!
+    surname: String!
+    email: String!
+    password: String!
+    language: String!
+    companyName: String!
+    phone: String!
+    country: String!
+    address: String!
+}
+
+type Registered {
+    company: Company,
+    token: String
 }
 
 input InputCompany {
@@ -28,6 +46,7 @@ type Query {
 }
 
 type Mutation {
+    register(registerInfo: RegisterInfo!): Registered
     addCompany(company:InputCompany!): Company
 }
 

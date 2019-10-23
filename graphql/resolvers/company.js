@@ -1,6 +1,7 @@
-import { withFilter } from 'apollo-server-express';
+import { withFilter, UserInputError } from 'apollo-server-express';
 import app from '../../server';
 import Company from '../../models/Company';
+import User from '../../models/User';
 
 const resolvers = {
 	Query: {
@@ -10,6 +11,34 @@ const resolvers = {
         }
 	},
 	Mutation: {
+        register: async (root, { registerInfo }, context) => {
+			try {
+                const newUser = {
+                    name: registerInfo.name,
+                    surname: registerInfo.surname,
+                    email: registerInfo.email,
+                    password: registerInfo.password,
+                    language: registerInfo.language
+                };
+
+                const newCompany = {
+                    name: registerInfo.companyName,
+                    phone: registerInfo.phone,
+                    country: registerInfo.country,
+                    address: registerInfo.address,
+                    users: [newUser]
+                };
+
+                const company = await Company.create(newCompany, {
+                    include: [{
+                        model: User,
+                        as: 'users'
+                    }]
+                });               
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
 		addCompany: async (root, { company }, context) => {
 			try {
                 const createdCompany = await Company.create(company);
