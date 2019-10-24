@@ -9,7 +9,7 @@ type Company {
     logo: String
     domain: String
     creationDate: String
-    active: String
+    active: Boolean
 }
 
 input RegisterInfo {

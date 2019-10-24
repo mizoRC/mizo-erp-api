@@ -1,4 +1,6 @@
-import { withFilter, UserInputError } from 'apollo-server-express';
+import { withFilter } from 'apollo-server-express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import app from '../../server';
 import Company from '../../models/Company';
 import User from '../../models/User';
@@ -13,11 +15,13 @@ const resolvers = {
 	Mutation: {
         register: async (root, { registerInfo }, context) => {
 			try {
+                const hash = await bcrypt.hash(registerInfo.password, 10);
+
                 const newUser = {
                     name: registerInfo.name,
                     surname: registerInfo.surname,
                     email: registerInfo.email,
-                    password: registerInfo.password,
+                    password: hash,
                     language: registerInfo.language
                 };
 
@@ -34,7 +38,21 @@ const resolvers = {
                         model: User,
                         as: 'users'
                     }]
-                });               
+                });  
+
+                let userToTokenize = {
+                    ...newUser,
+                    companyId: company.id
+                }
+
+                const token = jwt.sign({user:userToTokenize}, 'secret', { expiresIn: 60 * 60 * 8}); //8H    
+
+                const registered = {
+                    company: company,
+                    token: token
+                };
+
+                return registered;    
 			} catch (error) {
 				throw new Error(error);
 			}
