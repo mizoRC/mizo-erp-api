@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../setup/sequelize';
 import Company from './Company';
 
-const User = sequelize.define('user', 
+const Employee = sequelize.define('employee', 
     {
         id: {
             type: DataTypes.INTEGER,
@@ -31,6 +31,10 @@ const User = sequelize.define('user',
             type: DataTypes.STRING,
             allowNull: false
         },
+        role: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         creationDate:{
             type: DataTypes.DATE,
             allowNull: true,
@@ -41,22 +45,12 @@ const User = sequelize.define('user',
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: true,
-        },
-        // foreign keys:
-        companyId: {
-            type: DataTypes.INTEGER,
-            references: {
-                // This is a reference to another model
-                model: Company,
-                // This is the column name of the referenced model
-                key: 'id'
-            }
         }
     },
 	{
-		modelName: "user",
-		tableName: "users"
+		modelName: "employee",
+		tableName: "employees"
 	}
 );
 
-module.exports = User;
+module.exports = Employee;

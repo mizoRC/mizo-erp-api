@@ -25,9 +25,9 @@ export default (app) => {
                 return true;
                 /* if(connectionParams.token){
                     let tokenPayload = await jwt.verify(connectionParams.token, process.env.JWT_SECRET);
-                    let user = await User.findOne({id: tokenPayload.id, user:tokenPayload.user});
-                    if(user){
-                        return {user: user};
+                    let employee = await Employee.findOne({id: tokenPayload.id, email:tokenPayload.email});
+                    if(employee){
+                        return {employee: employee};
                     }
                     else{
                         throw new Error('Missing auth token!');

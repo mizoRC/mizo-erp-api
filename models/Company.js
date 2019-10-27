@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../setup/sequelize';
-import User from './User';
+import Employee from './Employee';
 
 const Company = sequelize.define('company', 
     {
@@ -63,6 +63,6 @@ const Company = sequelize.define('company',
 	}
 );
 
-Company.hasMany(User, {as: 'users'});
+Company.belongsToMany(Employee, { as: 'employees', through: 'companies_employees', foreignKey: 'companyId', otherKey: 'employeeId'});
 
 module.exports = Company;

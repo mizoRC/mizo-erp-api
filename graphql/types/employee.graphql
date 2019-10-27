@@ -1,11 +1,12 @@
 # This "Book" type can be used in other type declarations.
-type User {
+type Employee {
     id: Int
     name: String
     surname: String
     email: String
     password: String
     language: String
+    role: String
     creationDate: String
     active: Boolean
     companyId: Int
@@ -14,7 +15,7 @@ type User {
 # The "Query" type is the root of all GraphQL queries.
 # (A "Mutation" type will be covered later on.)
 type Query {
-    me: User
+    me: Employee
 }
 
 type Mutation {

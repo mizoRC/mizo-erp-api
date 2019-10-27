@@ -3,7 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import app from '../../server';
 import Company from '../../models/Company';
-import User from '../../models/User';
+import Employee from '../../models/Employee';
+import { ROLES } from '../../constants';
 
 const resolvers = {
 	Query: {
@@ -15,14 +16,16 @@ const resolvers = {
 	Mutation: {
         register: async (root, { registerInfo }, context) => {
 			try {
+                console.log(registerInfo);
                 const hash = await bcrypt.hash(registerInfo.password, 10);
 
-                const newUser = {
+                const newEmployee = {
                     name: registerInfo.name,
                     surname: registerInfo.surname,
                     email: registerInfo.email,
                     password: hash,
-                    language: registerInfo.language
+                    language: registerInfo.language,
+                    role: ROLES.MANAGER
                 };
 
                 const newCompany = {
@@ -30,22 +33,22 @@ const resolvers = {
                     phone: registerInfo.phone,
                     country: registerInfo.country,
                     address: registerInfo.address,
-                    users: [newUser]
+                    employees: [newEmployee]
                 };
 
                 const company = await Company.create(newCompany, {
                     include: [{
-                        model: User,
-                        as: 'users'
+                        model: Employee,
+                        as: 'employees'
                     }]
                 });  
 
-                let userToTokenize = {
-                    ...newUser,
+                let employeeToTokenize = {
+                    ...newEmployee,
                     companyId: company.id
                 }
 
-                const token = jwt.sign({user:userToTokenize}, 'secret', { expiresIn: 60 * 60 * 8}); //8H    
+                const token = jwt.sign({employee:employeeToTokenize}, 'secret', { expiresIn: 60 * 60 * 8}); //8H    
 
                 const registered = {
                     company: company,
