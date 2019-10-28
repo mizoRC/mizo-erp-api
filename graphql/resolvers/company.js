@@ -16,46 +16,52 @@ const resolvers = {
 	Mutation: {
         register: async (root, { registerInfo }, context) => {
 			try {
-                console.log(registerInfo);
                 const hash = await bcrypt.hash(registerInfo.password, 10);
 
-                const newEmployee = {
-                    name: registerInfo.name,
-                    surname: registerInfo.surname,
-                    email: registerInfo.email,
-                    password: hash,
-                    language: registerInfo.language,
-                    role: ROLES.MANAGER
-                };
+                const existEmail = await Employee.findOne({where: {email: registerInfo.email}});
 
-                const newCompany = {
-                    name: registerInfo.companyName,
-                    phone: registerInfo.phone,
-                    country: registerInfo.country,
-                    address: registerInfo.address,
-                    employees: [newEmployee]
-                };
-
-                const company = await Company.create(newCompany, {
-                    include: [{
-                        model: Employee,
-                        as: 'employees'
-                    }]
-                });  
-
-                let employeeToTokenize = {
-                    ...newEmployee,
-                    companyId: company.id
+                if(existEmail){
+                    throw new Error('Email already registered');
                 }
+                else{
+                    const newEmployee = {
+                        name: registerInfo.name,
+                        surname: registerInfo.surname,
+                        email: registerInfo.email,
+                        password: hash,
+                        language: registerInfo.language,
+                        role: ROLES.MANAGER
+                    };
 
-                const token = jwt.sign({employee:employeeToTokenize}, 'secret', { expiresIn: 60 * 60 * 8}); //8H    
+                    const newCompany = {
+                        name: registerInfo.companyName,
+                        phone: registerInfo.phone,
+                        country: registerInfo.country,
+                        address: registerInfo.address,
+                        employees: [newEmployee]
+                    };
 
-                const registered = {
-                    company: company,
-                    token: token
-                };
+                    const company = await Company.create(newCompany, {
+                        include: [{
+                            model: Employee,
+                            as: 'employees'
+                        }]
+                    }); 
 
-                return registered;    
+                    let employeeToTokenize = {
+                        ...newEmployee,
+                        companyId: company.id
+                    }
+
+                    const token = jwt.sign({employee:employeeToTokenize}, 'secret', { expiresIn: 60 * 60 * 8}); //8H    
+
+                    const registered = {
+                        company: company,
+                        token: token
+                    };
+
+                    return registered;
+                }    
 			} catch (error) {
 				throw new Error(error);
 			}
