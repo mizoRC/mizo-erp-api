@@ -9,7 +9,7 @@ type Employee {
     role: String
     creationDate: String
     active: Boolean
-    companyId: Int
+    companies: [Company]
 }
 
 # The "Query" type is the root of all GraphQL queries.

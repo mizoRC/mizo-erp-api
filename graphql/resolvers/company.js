@@ -2,8 +2,7 @@ import { withFilter } from 'apollo-server-express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import app from '../../server';
-import Company from '../../models/Company';
-import Employee from '../../models/Employee';
+import { Company, Employee } from '../../models/CompanyEmployee';
 import { ROLES } from '../../constants';
 
 const resolvers = {
@@ -50,10 +49,11 @@ const resolvers = {
 
                     let employeeToTokenize = {
                         ...newEmployee,
-                        companyId: company.id
+                        companyId: company.id,
+                        id: company.employees[0].id
                     }
 
-                    const token = jwt.sign({employee:employeeToTokenize}, 'secret', { expiresIn: 60 * 60 * 8}); //8H    
+                    const token = jwt.sign({employee:employeeToTokenize}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //8H    
 
                     const registered = {
                         company: company,

@@ -10,6 +10,7 @@ type Company {
     domain: String
     creationDate: String
     active: Boolean
+    employees: [Employee]
 }
 
 input RegisterInfo {
