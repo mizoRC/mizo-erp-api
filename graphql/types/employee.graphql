@@ -9,7 +9,15 @@ type Employee {
     role: String
     creationDate: String
     active: Boolean
-    companies: [Company]
+    company: Company
+}
+
+input UpdateEmployeeInfo {
+    name: String!
+    surname: String!
+    email: String!
+    password: String!
+    language: String!
 }
 
 # The "Query" type is the root of all GraphQL queries.
@@ -20,4 +28,5 @@ type Query {
 
 type Mutation {
     login(email: String!, password: String!): Token
+    updateEmployee(updateInfo: UpdateEmployeeInfo): Token
 }

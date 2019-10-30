@@ -113,8 +113,8 @@ const Employee = sequelize.define('employee',
 	}
 );
 
-Employee.belongsToMany(Company, { as: 'companies', through: 'companies_employees', foreignKey: 'employeeId', otherKey: 'companyId'});
-Company.belongsToMany(Employee, { as: 'employees', through: 'companies_employees', foreignKey: 'companyId', otherKey: 'employeeId'});
+Company.hasMany(Employee, { as: 'employees', foreignKey: 'companyId'});
+Employee.belongsTo(Company, { as: 'company', foreignKey: 'companyId'});
 
 module.exports = {
     Company: Company,
