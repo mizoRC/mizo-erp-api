@@ -18,6 +18,8 @@ input UpdateEmployeeInfo {
     email: String!
     password: String!
     language: String!
+    newPassword: String
+    newPasswordRepeated: String
 }
 
 # The "Query" type is the root of all GraphQL queries.
