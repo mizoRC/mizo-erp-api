@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import app from '../../server';
 import { Company, Employee } from '../../models/CompanyEmployee';
+import { getEmployeeFromJWT } from '../../utils/auth';
 import { ROLES } from '../../constants';
 
 const resolvers = {
@@ -73,6 +74,26 @@ const resolvers = {
                 app.settings.pubsub.publish('companyAdded', {companyAdded: createdCompany});
 
                 return createdCompany;
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+        updateCompany: async (root, { updateInfo }, context) => {
+			try {
+                const employee = await getEmployeeFromJWT(context.req);
+                const company = await employee.getCompany();
+
+                company.name = updateInfo.name;
+                company.country = updateInfo.country;
+                company.address = updateInfo.address;
+                company.phone = updateInfo.phone;
+                if(!!updateInfo.logo) company.logo = updateInfo.logo;
+
+                await company.save();
+                const updatedEmployee = await Employee.findOne({where: {id: employee.id}});
+
+                const token = jwt.sign({employee: updatedEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
+                return { token };
 			} catch (error) {
 				throw new Error(error);
 			}

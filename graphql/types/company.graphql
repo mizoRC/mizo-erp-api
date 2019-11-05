@@ -35,9 +35,18 @@ input InputCompany {
     address: String
     tin: String
     phone: String
+    country: String
     logo: String
     domain: String
     creationDate: String
+}
+
+input UpdateCompanyInfo {
+    name: String!
+    country: String!
+    address: String!
+    phone: String!
+    logo: String
 }
 
 # The "Query" type is the root of all GraphQL queries.
@@ -49,6 +58,7 @@ type Query {
 type Mutation {
     register(registerInfo: RegisterInfo!): Registered
     addCompany(company:InputCompany!): Company
+    updateCompany(updateInfo:UpdateCompanyInfo!): Token
 }
 
 type Subscription {
