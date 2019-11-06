@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import nodemailer from '../../setup/nodemailer';
-import { Employee } from '../../models/CompanyEmployee';
+import { buildEmployeeRegisterBody, send } from '../../utils/emails';
+import { Employee, Company } from '../../models/CompanyEmployee';
 import { getEmployeeFromJWT } from '../../utils/auth';
+import logger from '../../utils/logger';
 
 const resolvers = {
 	Query: {
@@ -24,9 +25,13 @@ const resolvers = {
         login: async (root, { email, password }, context) => {
 			try {
                 const employee = await Employee.findOne({where: {email: email, active: true}});
+                const company = await employee.getCompany();
                 const match = await bcrypt.compare(password, employee.password);
                 if(match && employee.active == 1){
-                    const token = jwt.sign({employee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
+                    const plainEmployee = employee.get({ plain: true });
+                    const {logo, ...plainCompany} = company.get({ plain: true });
+                    const tokenEmployee = {...plainEmployee, company: plainCompany};
+                    const token = jwt.sign({employee: tokenEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
                     return { token };
                 }
                 else{
@@ -39,6 +44,7 @@ const resolvers = {
         updateEmployeeMe: async (root, { updateInfo }, context) => {
 			try {
                 const employee = await Employee.findOne({where: {email: updateInfo.email}});
+                const company = await Company.findOne({where: {id: employee.companyId}});
                 const match = await bcrypt.compare(updateInfo.password, employee.password);
                 if(match && employee.active == 1){
                     employee.name = updateInfo.name;
@@ -51,7 +57,11 @@ const resolvers = {
                     
                     const updatedEmployee = await employee.save();
 
-                    const token = jwt.sign({employee: updatedEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
+                    const plainEmployee = updatedEmployee.get({ plain: true });
+                    const {logo, ...plainCompany} = company.get({ plain: true });
+                    const tokenEmployee = {...plainEmployee, company: plainCompany};
+                    console.log('tokenEmployee',tokenEmployee)
+                    const token = jwt.sign({employee: tokenEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
                     return { token };
                 }
                 else{
@@ -79,7 +89,25 @@ const resolvers = {
 
                 const createdEmployee = await Employee.create(newEmployee);
 
-                return createdEmployee;
+                try {
+                    const registerToken = jwt.sign({employee:createdEmployee}, process.env.JWT_SECRET);
+                    const data = {
+                        logo: 'https://api-erp.mizo.es/logo/get',
+                        name: createdEmployee.name,
+                        company: company.name,
+                        employeeRegisterLink: `http://localhost:3000/register/${registerToken}`
+                    };
+                    const subject = "Bienvenido a MizoERP Cloud"
+                    const body = buildEmployeeRegisterBody(data);
+                    const to = createdEmployee.email;
+                    await send(subject, body, to);
+                } catch (error) {
+                    logger.error('ERROR SENDING ADD EMPLOYEE EMAIL');
+                    logger.error(error);
+                }
+                finally {
+                    return createdEmployee;
+                }
 			} catch (error) {
 				throw new Error(error);
 			}

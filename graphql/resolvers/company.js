@@ -8,6 +8,11 @@ import { ROLES } from '../../constants';
 
 const resolvers = {
 	Query: {
+        company: async (root, {  }, context) => {
+            const employee = await getEmployeeFromJWT(context.req);
+            const company = await employee.getCompany();
+            return company
+        },
 		companies: async (root, {  }, context) => {
             const companies = await Company.findAll();
             return companies;
@@ -90,9 +95,13 @@ const resolvers = {
                 if(!!updateInfo.logo) company.logo = updateInfo.logo;
 
                 await company.save();
-                const updatedEmployee = await Employee.findOne({where: {id: employee.id}});
+                await Employee.findOne({where: {id: employee.id}});
 
-                const token = jwt.sign({employee: updatedEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
+                const plainEmployee = employee.get({ plain: true });
+                const {logo, ...plainCompany} = company.get({ plain: true });
+                const tokenEmployee = {...plainEmployee, company: plainCompany};
+
+                const token = jwt.sign({employee: tokenEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
                 return { token };
 			} catch (error) {
 				throw new Error(error);
