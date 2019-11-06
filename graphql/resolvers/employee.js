@@ -10,6 +10,13 @@ const resolvers = {
             const company = await employee.getCompany();
             employee.company = company;
             return employee;
+        },
+        employees: async (root, {  }, context) => {
+            const employee = await getEmployeeFromJWT(context.req);
+            const company = await employee.getCompany();
+
+            const employees = await company.getEmployees();
+            return employees;
         }
 	},
 	Mutation: {
@@ -18,7 +25,7 @@ const resolvers = {
                 const employee = await Employee.findOne({where: {email: email}});
                 const match = await bcrypt.compare(password, employee.password);
                 if(match && employee.active == 1){
-                    const token = jwt.sign({employee: employee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
+                    const token = jwt.sign({employee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
                     return { token };
                 }
                 else{
@@ -49,6 +56,30 @@ const resolvers = {
                 else{
                     throw new Error('Password not match');
                 }
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+        addEmployee: async (root, { employee }, context) => {
+			try {
+                const JWTemployee = await getEmployeeFromJWT(context.req);
+                const company = await JWTemployee.getCompany();
+
+                const hash = await bcrypt.hash("00000000", 10);
+                const newEmployee = {
+                    name: employee.name,
+                    surname: employee.surname,
+                    email: employee.email,
+                    password: hash,
+                    language: employee.language,
+                    role: employee.role,
+                    companyId: company.id
+                };
+
+                console.log('NEW EMPLOYEE', newEmployee);
+
+                const createdEmployee = await Employee.create(newEmployee);
+                return createdEmployee;
 			} catch (error) {
 				throw new Error(error);
 			}
