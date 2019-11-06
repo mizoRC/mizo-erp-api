@@ -17,7 +17,7 @@ class AuthError extends Error {
 const decodeAuthToken = async(req) => {
     try {
         let decodedToken = await jwt.verify(req.headers["x-mizo-erp-token"], process.env.JWT_SECRET);
-        let employee = await Employee.findOne({id: decodedToken.id, email:decodedToken.email});
+        let employee = await Employee.findOne({where:{id: decodedToken.employee.id, email:decodedToken.employee.email}});
         if(employee){
             return employee;
         }
