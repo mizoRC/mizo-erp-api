@@ -12,7 +12,7 @@ type Employee {
     company: Company
 }
 
-input UpdateEmployeeInfo {
+input UpdateEmployeeMeInfo {
     name: String!
     surname: String!
     email: String!
@@ -30,6 +30,15 @@ input EmployeeInput {
     role: String!
 }
 
+input EmployeeInputUpdate {
+    id: Int!
+    name: String!
+    surname: String!
+    email: String!
+    language: String!
+    role: String!
+}
+
 # The "Query" type is the root of all GraphQL queries.
 # (A "Mutation" type will be covered later on.)
 type Query {
@@ -39,6 +48,8 @@ type Query {
 
 type Mutation {
     login(email: String!, password: String!): Token
-    updateEmployee(updateInfo: UpdateEmployeeInfo): Token
+    updateEmployeeMe(updateInfo: UpdateEmployeeMeInfo): Token
     addEmployee(employee: EmployeeInput!): Employee
+    updateEmployee(employee: EmployeeInputUpdate!): Employee
+    unsubscribeEmployee(employeeId: Int!): Employee
 }

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import nodemailer from '../../setup/nodemailer';
 import { Employee } from '../../models/CompanyEmployee';
 import { getEmployeeFromJWT } from '../../utils/auth';
 
@@ -15,14 +16,14 @@ const resolvers = {
             const employee = await getEmployeeFromJWT(context.req);
             const company = await employee.getCompany();
 
-            const employees = await company.getEmployees();
+            const employees = await company.getEmployees({ where: { active: true } });
             return employees;
         }
 	},
 	Mutation: {
         login: async (root, { email, password }, context) => {
 			try {
-                const employee = await Employee.findOne({where: {email: email}});
+                const employee = await Employee.findOne({where: {email: email, active: true}});
                 const match = await bcrypt.compare(password, employee.password);
                 if(match && employee.active == 1){
                     const token = jwt.sign({employee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
@@ -35,7 +36,7 @@ const resolvers = {
 				throw new Error(error);
 			}
 		},
-        updateEmployee: async (root, { updateInfo }, context) => {
+        updateEmployeeMe: async (root, { updateInfo }, context) => {
 			try {
                 const employee = await Employee.findOne({where: {email: updateInfo.email}});
                 const match = await bcrypt.compare(updateInfo.password, employee.password);
@@ -76,14 +77,57 @@ const resolvers = {
                     companyId: company.id
                 };
 
-                console.log('NEW EMPLOYEE', newEmployee);
-
                 const createdEmployee = await Employee.create(newEmployee);
+
                 return createdEmployee;
 			} catch (error) {
 				throw new Error(error);
 			}
-		}
+		},
+        updateEmployee: async (root, { employee }, context) => {
+			try {
+                const JWTemployee = await getEmployeeFromJWT(context.req);
+                const company = await JWTemployee.getCompany();
+
+                const dbEmployee = await Employee.findOne({where:{id: employee.id, companyId: company.id}});
+
+                if(dbEmployee){
+                    dbEmployee.name = employee.name;
+                    dbEmployee.surname = employee.surname;
+                    dbEmployee.email = employee.email;
+                    dbEmployee.language = employee.language;
+                    dbEmployee.role = employee.role;
+
+                    const updatedEmployee = await dbEmployee.save();
+                    return updatedEmployee;
+                }
+                else{
+                    throw new Error("This employee doesn't belong to your company");
+                }
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+        unsubscribeEmployee: async (root, { employeeId }, context) => {
+            try {
+                const JWTemployee = await getEmployeeFromJWT(context.req);
+                const company = await JWTemployee.getCompany();
+
+                const dbEmployee = await Employee.findOne({where:{id: employeeId, companyId: company.id}});
+
+                if(dbEmployee){
+                    dbEmployee.active = false;
+
+                    const updatedEmployee = await dbEmployee.save();
+                    return updatedEmployee;
+                }
+                else{
+                    throw new Error("This employee doesn't belong to your company");
+                }
+            } catch (error) {
+                throw new Error(error);
+            }
+        }
 	}
 };
 
