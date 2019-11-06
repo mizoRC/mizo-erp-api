@@ -13,7 +13,7 @@ let transporter = nodemailer.createTransport({
 const send = async() => {
     try {
         const data = {
-            logo: 'https://apicmp.councilbox.com/logo/get',
+            logo: 'https://api-erp.mizo.es/logo/get',
             name: "Miguel",
             company: "MizoTech SL",
             employeeRegisterLink: `erp.mizo.es`
@@ -33,7 +33,6 @@ const send = async() => {
         console.error(error);
     }
 }
-//send();
 
 
 module.exports = transporter;
