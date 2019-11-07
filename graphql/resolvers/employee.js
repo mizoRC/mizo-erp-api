@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Op } from 'sequelize';
 import { buildEmployeeRegisterBody, send } from '../../utils/emails';
 import { Employee, Company } from '../../models/CompanyEmployee';
 import { getEmployeeFromJWT } from '../../utils/auth';
@@ -11,13 +12,14 @@ const resolvers = {
             const employee = await getEmployeeFromJWT(context.req);
             const company = await employee.getCompany();
             employee.company = company;
+            
             return employee;
         },
         employees: async (root, {  }, context) => {
             const employee = await getEmployeeFromJWT(context.req);
             const company = await employee.getCompany();
 
-            const employees = await company.getEmployees({ where: { active: true } });
+            const employees = await company.getEmployees({ where: { [Op.and]: [ { id: { [Op.not]: employee.id } }, { active: true } ]}});
             return employees;
         }
 	},
@@ -36,6 +38,31 @@ const resolvers = {
                 }
                 else{
                     throw new Error('Invalid employee');
+                }
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+        registerEmployee: async (root, { newPassword }, context) => {
+			try {
+                const employee = await getEmployeeFromJWT(context.req);
+                const company = await employee.getCompany();
+
+                if(employee.registered){
+                    throw new Error('Employee already registered');
+                }
+                else{
+                    const hash = await bcrypt.hash(newPassword, 10);
+                    employee.password = hash;
+                    employee.registered = true;
+                    
+                    const updatedEmployee = await employee.save();
+
+                    const plainEmployee = updatedEmployee.get({ plain: true });
+                    const {logo, ...plainCompany} = company.get({ plain: true });
+                    const tokenEmployee = {...plainEmployee, company: plainCompany};
+                    const token = jwt.sign({employee: tokenEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
+                    return { token };
                 }
 			} catch (error) {
 				throw new Error(error);
@@ -60,7 +87,6 @@ const resolvers = {
                     const plainEmployee = updatedEmployee.get({ plain: true });
                     const {logo, ...plainCompany} = company.get({ plain: true });
                     const tokenEmployee = {...plainEmployee, company: plainCompany};
-                    console.log('tokenEmployee',tokenEmployee)
                     const token = jwt.sign({employee: tokenEmployee}, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 8}); //16H
                     return { token };
                 }
@@ -84,7 +110,8 @@ const resolvers = {
                     password: hash,
                     language: employee.language,
                     role: employee.role,
-                    companyId: company.id
+                    companyId: company.id,
+                    registered: false
                 };
 
                 const createdEmployee = await Employee.create(newEmployee);

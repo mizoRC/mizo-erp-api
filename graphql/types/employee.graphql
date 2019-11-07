@@ -9,6 +9,7 @@ type Employee {
     role: String
     creationDate: String
     active: Boolean
+    registered: Boolean
     company: Company
 }
 
@@ -48,6 +49,7 @@ type Query {
 
 type Mutation {
     login(email: String!, password: String!): Token
+    registerEmployee(newPassword: String!): Token
     updateEmployeeMe(updateInfo: UpdateEmployeeMeInfo): Token
     addEmployee(employee: EmployeeInput!): Employee
     updateEmployee(employee: EmployeeInputUpdate!): Employee

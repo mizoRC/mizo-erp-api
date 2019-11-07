@@ -105,6 +105,11 @@ const Employee = sequelize.define('employee',
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: true,
+        },
+        registered: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: true,
         }
     },
 	{
