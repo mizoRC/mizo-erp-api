@@ -122,7 +122,7 @@ const resolvers = {
                         logo: 'https://api-erp.mizo.es/logo/get',
                         name: createdEmployee.name,
                         company: company.name,
-                        employeeRegisterLink: `http://localhost:3000/register/${registerToken}`
+                        employeeRegisterLink: `${process.env.MIZO_ERP_CLOUD_URL}/register/${registerToken}`
                     };
                     const subject = "Bienvenido a MizoERP Cloud"
                     const body = buildEmployeeRegisterBody(data);
