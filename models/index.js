@@ -1,4 +1,4 @@
-import { lstatSync, readdirSync, readFileSync } from 'fs';
+/* import { lstatSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 const getModelFiles = source => readdirSync(source).map(name => join(source, name));
@@ -25,6 +25,19 @@ modelFiles.forEach(modelFile => {
         console.error(error);
         throw Error(error);
     }
-});
+}); */
+import Translation from './Translation';
+import CompanyEmployee from './CompanyEmployee';
+import Customer from './Customer';
+import Product from './Product';
+import Category from './Category';
+
+const models = {
+    Translation: Translation,
+    CompanyEmployee: CompanyEmployee,
+    Customer: Customer,
+    Product: Product,
+    Category: Category
+}
 
 export default models;

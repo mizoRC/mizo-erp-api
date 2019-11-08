@@ -1,0 +1,42 @@
+# This "Book" type can be used in other type declarations.
+type Product {
+    id: Int
+    name: String
+    barcode: String
+    price: Float
+    image: String
+    vat: Int
+    category: Category
+    active: Boolean
+}
+
+input ProductInput {
+    name: String!
+    barcode: String!
+    price: Float!
+    image: String
+    vat: Int!
+    categoryId: Int!
+}
+
+input ProductInputUpdate {
+    id: Int!
+    name: String!
+    barcode: String!
+    price: Float!
+    image: String
+    vat: Int!
+    categoryId: Int!
+}
+
+# The "Query" type is the root of all GraphQL queries.
+# (A "Mutation" type will be covered later on.)
+type Query {
+    products: [Product]
+}
+
+type Mutation {
+    addProduct(product: ProductInput!): Product
+    updateProduct(product: ProductInputUpdate!): Product
+    unsubscribeProduct(productId: Int!): Product
+}
