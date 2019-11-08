@@ -29,11 +29,15 @@ modelFiles.forEach(modelFile => {
 import Translation from './Translation';
 import CompanyEmployee from './CompanyEmployee';
 import Customer from './Customer';
+import Product from './Product';
+import Category from './Category';
 
 const models = {
     Translation: Translation,
     CompanyEmployee: CompanyEmployee,
-    Customer: Customer
+    Customer: Customer,
+    Product: Product,
+    Category: Category
 }
 
 export default models;
