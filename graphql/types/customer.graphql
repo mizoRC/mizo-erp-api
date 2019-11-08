@@ -1,0 +1,38 @@
+# This "Book" type can be used in other type declarations.
+type Customer {
+    id: Int
+    name: String
+    phone: String
+    email: String
+    address: String
+    creationDate: String
+    active: Boolean
+    company: Company
+}
+
+input CustomerInput {
+    name: String!
+    phone: String!
+    email: String
+    address: String
+}
+
+input CustomerInputUpdate {
+    id: Int!
+    name: String!
+    phone: String!
+    email: String
+    address: String
+}
+
+# The "Query" type is the root of all GraphQL queries.
+# (A "Mutation" type will be covered later on.)
+type Query {
+    customers: [Customer]
+}
+
+type Mutation {
+    addCustomer(customer: CustomerInput!): Customer
+    updateCustomer(customer: CustomerInputUpdate!): Customer
+    unsubscribeCustomer(customerId: Int!): Customer
+}
