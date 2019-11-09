@@ -15,10 +15,6 @@ const Category = sequelize.define("category",
             type: DataTypes.STRING,
             allowNull: false
         },
-        translationTag: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
         active: {
             type: DataTypes.BOOLEAN,
             allowNull: true,

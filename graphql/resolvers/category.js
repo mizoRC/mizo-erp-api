@@ -7,7 +7,7 @@ const resolvers = {
             const employee = await getEmployeeFromJWT(context.req);
             const company = await employee.getCompany();
 
-            const categories = await company.getCategories();
+            const categories = await company.getCategories({where: { active: true }});
             return categories;
         }
 	},
@@ -19,7 +19,6 @@ const resolvers = {
 
                 const newCategory = {
                     name: category.name,
-                    translationTag: category.translationTag,
                     companyId: company.id
                 };
 

@@ -2,14 +2,12 @@
 type Category {
     id: Int
     name: String
-    translationTag: String
     companyId: Int
     active: Boolean
 }
 
 input CategoryInput {
     name: String!
-    translationTag: String!
 }
 
 # The "Query" type is the root of all GraphQL queries.
