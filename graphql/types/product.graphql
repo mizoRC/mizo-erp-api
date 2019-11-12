@@ -32,10 +32,15 @@ input ProductInputUpdate {
     categoryId: Int
 }
 
+type FilteredProducts {
+    rows: [Product]
+    count: Int
+}
+
 # The "Query" type is the root of all GraphQL queries.
 # (A "Mutation" type will be covered later on.)
 type Query {
-    products: [Product]
+    products(filters: [Filter]!, options: Options!): FilteredProducts
 }
 
 type Mutation {

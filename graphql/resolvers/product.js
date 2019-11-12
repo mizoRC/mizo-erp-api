@@ -9,38 +9,61 @@ const resolvers = {
             const employee = await getEmployeeFromJWT(context.req);
             const company = await employee.getCompany();
 
-            /* const limit = (!!options && !!options.limit) ? options.limit : 0;
+            const limit = (!!options && !!options.limit) ? options.limit : 0;
             const offset = (!!options && !!options.offset) ? options.offset : 0;
 
 
             let findParams = { where:{  } };
 
+
+            let searchParams;
+            let categoryParams;
             filters.forEach(filter => {
-                if(filter.field === 'state'){
-                    findParams.where[filter.field] = filter.text;
+                if(filter.field === 'search'){
+                        searchParams = {
+                            [Op.or]:[
+                                {'name':{[Op.iLike]: `%${filter.value}%`}},
+                                {'brand':{[Op.iLike]: `%${filter.value}%`}},
+                                {'barcode':{[Op.iLike]: `%${filter.value}%`}}
+                            ]
+                        }
                 }
-                else if(filter.field === 'receiver'){
-                    findParams.where[filter.field] = {[Op.iLike]: `%${filter.text}%`};
-                }
-                else{
-                    findParams.where.params[filter.field] = filter.text;
+                else if(filter.field === 'category'){
+                    categoryParams = {categoryId: parseInt(filter.value)}
                 }
             });
+
+            if(categoryParams){
+                findParams.where = {
+                    [Op.and]:[
+                            searchParams,
+                            categoryParams,
+                            {companyId: company.id},
+                            {active: true} 
+                    ]
+                };
+            }
+            else{
+                findParams.where = {
+                [Op.and]:[
+                        searchParams,
+                        {companyId: company.id},
+                        {active: true} 
+                ]
+            };
+            }
+            
+
+            findParams.order = [
+                ['id', 'ASC']
+            ];
 
             if(limit > 0)findParams.limit = limit;
             if(offset > 0) findParams.offset = offset; 
 
+            const products = await Product.findAndCountAll(findParams);
 
-            const products = await Product.findAndCountAll({ 
-                where: {
-                    [Op.and]:[
-                        {companyId: company.id},
-                        {active: true} 
-                    ] 
-                }
-            }); */
-
-            const products = await Product.findAll({ 
+            /* const products = await Product.findAndCountAll({ 
                 where: {
                     [Op.and]:[
                         {companyId: company.id},
@@ -50,7 +73,7 @@ const resolvers = {
                 order: [
                     ['id', 'ASC']
                 ]
-            });
+            }); */
 
             return products;
         }

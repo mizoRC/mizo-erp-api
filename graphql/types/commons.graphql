@@ -6,3 +6,13 @@ enum Languages {
 type Token {
     token: String!
 }
+
+input Filter {
+  field: String!
+  value: String!
+}
+
+input Options {
+  limit: Int
+  offset: Int
+}
