@@ -1,4 +1,5 @@
 import Product from '../../models/Product';
+import Category from '../../models/Category';
 import { Op } from 'sequelize';
 import { getEmployeeFromJWT } from '../../utils/auth';
 
@@ -45,7 +46,10 @@ const resolvers = {
                         {companyId: company.id},
                         {active: true} 
                     ] 
-                }
+                },
+                order: [
+                    ['id', 'ASC']
+                ]
             });
 
             return products;
@@ -77,11 +81,12 @@ const resolvers = {
 
                 if(dbProduct){
                     dbProduct.name = product.name;
+                    dbProduct.brand = product.brand;
                     dbProduct.barcode = product.barcode;
                     dbProduct.price = product.price;
                     dbProduct.image = product.image;
                     dbProduct.vat = product.vat;
-                    dbProduct.category = product.category;
+                    dbProduct.categoryId = product.categoryId;
 
                     const updatedProduct = await dbProduct.save();
                     return updatedProduct;
