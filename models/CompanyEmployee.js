@@ -34,7 +34,7 @@ const Company = sequelize.define('company',
             defaultValue: ''
         },
         logo: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true,
             defaultValue: ''
         },

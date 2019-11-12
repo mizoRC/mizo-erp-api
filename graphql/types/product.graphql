@@ -2,31 +2,34 @@
 type Product {
     id: Int
     name: String
+    brand: String
     barcode: String
     price: Float
     image: String
     vat: Int
-    category: Category
+    categoryId: Int
     active: Boolean
 }
 
 input ProductInput {
     name: String!
+    brand: String
     barcode: String!
     price: Float!
     image: String
     vat: Int!
-    categoryId: Int!
+    categoryId: Int
 }
 
 input ProductInputUpdate {
     id: Int!
     name: String!
+    brand: String
     barcode: String!
     price: Float!
     image: String
     vat: Int!
-    categoryId: Int!
+    categoryId: Int
 }
 
 # The "Query" type is the root of all GraphQL queries.
