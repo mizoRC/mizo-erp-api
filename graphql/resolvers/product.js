@@ -55,25 +55,13 @@ const resolvers = {
             
 
             findParams.order = [
-                ['id', 'ASC']
+                ['id', 'DESC']
             ];
 
             if(limit > 0)findParams.limit = limit;
             if(offset > 0) findParams.offset = offset; 
 
             const products = await Product.findAndCountAll(findParams);
-
-            /* const products = await Product.findAndCountAll({ 
-                where: {
-                    [Op.and]:[
-                        {companyId: company.id},
-                        {active: true} 
-                    ] 
-                },
-                order: [
-                    ['id', 'ASC']
-                ]
-            }); */
 
             return products;
         }
