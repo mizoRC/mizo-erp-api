@@ -11,6 +11,17 @@ type Product {
     active: Boolean
 }
 
+type POSProduct {
+    id: Int
+    name: String
+    brand: String
+    barcode: String
+    price: Float
+    vat: Int
+    categoryId: Int
+    active: Boolean
+}
+
 input ProductInput {
     name: String!
     brand: String
@@ -41,6 +52,7 @@ type FilteredProducts {
 # (A "Mutation" type will be covered later on.)
 type Query {
     products(filters: [Filter]!, options: Options!): FilteredProducts
+    posProducts: [POSProduct]
 }
 
 type Mutation {

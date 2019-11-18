@@ -64,6 +64,21 @@ const resolvers = {
             const products = await Product.findAndCountAll(findParams);
 
             return products;
+        },
+        posProducts: async (root, {  }, context) => {
+            const employee = await getEmployeeFromJWT(context.req);
+            const company = await employee.getCompany();
+
+            const products = await Product.findAll({ 
+                where: {
+                    [Op.and]:[
+                        {companyId: company.id},
+                        {active: true} 
+                    ] 
+                }
+            });
+
+            return products;
         }
 	},
 	Mutation: {
