@@ -31,13 +31,15 @@ import CompanyEmployee from './CompanyEmployee';
 import Customer from './Customer';
 import Product from './Product';
 import Category from './Category';
+import Order from './Order';
 
 const models = {
     Translation: Translation,
     CompanyEmployee: CompanyEmployee,
     Customer: Customer,
     Product: Product,
-    Category: Category
+    Category: Category,
+    Order: Order
 }
 
 export default models;

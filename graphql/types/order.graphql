@@ -1,0 +1,65 @@
+type Line {
+    id: Int
+    productId: Int
+    name: String
+    price: Float
+    vat: Int
+    units: Int
+    total: Float
+    orderId: Int
+}
+
+type Order {
+    id: Int
+    ticketId: String
+    total: Float
+    companyId: Int
+    employeeId: Int
+    customerId: Int
+    paymentMethod: String
+    lines: [Line]
+    creationDate: String
+    active: Boolean
+}
+
+type FilteredOrder {
+    id: Int
+    ticketId: String
+    total: Float
+    employee: Employee
+    customer: Customer
+    paymentMethod: String
+    creationDate: String
+}
+
+input LineInput {
+    productId: Int!
+    name: String!
+    price: Float!
+    vat: Int!
+    units: Int!
+    total: Float!
+}
+
+input OrderInput {
+    ticketId: String!
+    total: Float!
+    customerId: Int
+    paymentMethod: String!
+    lines: [LineInput]!
+}
+
+type FilteredOrders {
+    rows: [FilteredOrder]
+    count: Int
+}
+
+# The "Query" type is the root of all GraphQL queries.
+# (A "Mutation" type will be covered later on.)
+type Query {
+    orders(filters: [Filter]!, options: Options!): FilteredOrders
+}
+
+type Mutation {
+    addOrder(order: OrderInput!): Order
+}
