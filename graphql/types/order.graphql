@@ -34,6 +34,7 @@ type FilteredOrder {
 
 input LineInput {
     productId: Int!
+    barcode: String
     name: String!
     price: Float!
     vat: Int!
