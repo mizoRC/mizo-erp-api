@@ -22,6 +22,18 @@ type Order {
     active: Boolean
 }
 
+type OrderDetail {
+    id: Int
+    ticketId: String
+    total: Float
+    companyId: Int
+    customer: Customer
+    paymentMethod: String
+    lines: [Line]
+    creationDate: String
+    active: Boolean
+}
+
 type FilteredOrder {
     id: Int
     ticketId: String
@@ -58,6 +70,7 @@ type FilteredOrders {
 # The "Query" type is the root of all GraphQL queries.
 # (A "Mutation" type will be covered later on.)
 type Query {
+    order(ticketId: String!, customerId: Int): OrderDetail
     orders(filters: [Filter]!, options: Options!): FilteredOrders
 }
 

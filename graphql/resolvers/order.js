@@ -1,12 +1,46 @@
 import { Order, Line } from '../../models/Order';
 import Customer from '../../models/Customer';
 import { Op } from 'sequelize';
+import moment from 'moment';
 import { getEmployeeFromJWT } from '../../utils/auth';
 import { isValidUUID } from '../../utils/validations';
 
 const resolvers = {
 	Query: {
+        order: async (root, { ticketId, customerId }, context) => {
+            let customerParams;
+
+            if(customerId){
+                customerParams = {
+                    model: Customer,
+                    as: 'customer',
+                    where: {
+                        id: customerId
+                    }
+                };
+            } else{
+                customerParams = {
+                    model: Customer,
+                    as: 'customer'
+                };
+            }
+
+            const order = await Order.findOne({
+                where: {
+                    ticketId: ticketId
+                },
+                include: [
+                    {
+                        model: Line,
+                        as: 'lines'
+                    },
+                    customerParams
+                ]
+            });
+            return order;
+        },
         orders: async (root, { filters, options }, context) => {
+            console.log('FILTERS', filters);
             const employee = await getEmployeeFromJWT(context.req);
             const company = await employee.getCompany();
 
@@ -36,38 +70,36 @@ const resolvers = {
                         }
                     }
                 }
-                /* else if(filter.field === 'date'){
-                    dateParams = {date: {[Op.iLike]: `%${filter.value}%`}}
-                } */
+                else if(filter.field === 'date'){
+                    const fromDate = new Date(`${filter.value} 02:00:00`);
+                    const toDate = moment(fromDate).add(1, 'days').toDate();
+
+                    dateParams = {creationDate: {
+                        [Op.lt]: toDate,
+                        [Op.gt]: fromDate
+                    }}
+                }
             });
 
-           /*  if(categoryParams){
+           if(dateParams){
                 findParams.where = {
                     [Op.and]:[
                             searchParams,
-                            paymentMethodParams,
+                            dateParams,
                             {companyId: company.id},
                             {active: true} 
                     ]
                 };
             }
-            else{ */
-                /* findParams.where = {
+            else{
+                findParams.where = {
                     [Op.and]:[
                             searchParams,
                             {companyId: company.id},
                             {active: true} 
                     ]
-                }; */
-            //}
-            
-            findParams.where = {
-                [Op.and]:[
-                    searchParams,
-                    {companyId: company.id},
-                    {active: true} 
-                ]
-            };
+                };
+            }
 
             findParams.order = [
                 ['id', 'DESC']
@@ -75,8 +107,6 @@ const resolvers = {
 
             if(limit > 0)findParams.limit = limit;
             if(offset > 0) findParams.offset = offset; 
-            
-            //{$eq: null}
 
             if(customerParams){
                 findParams.include = [{
