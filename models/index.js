@@ -32,6 +32,7 @@ import Customer from './Customer';
 import Product from './Product';
 import Category from './Category';
 import Order from './Order';
+import Part from './Part';
 
 const models = {
     Translation: Translation,
@@ -39,7 +40,8 @@ const models = {
     Customer: Customer,
     Product: Product,
     Category: Category,
-    Order: Order
+    Order: Order,
+    Part: Part
 }
 
 export default models;

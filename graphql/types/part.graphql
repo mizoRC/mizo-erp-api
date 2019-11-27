@@ -1,0 +1,55 @@
+type Part {
+    id: Int
+    partId: String
+    date: String
+    reason: String
+    type: String
+    finished: Boolean
+    notFinishedReason: String
+    employeeId: Int
+    customerId: Int
+    employee: Employee
+    customer: Customer
+    creationDate: String
+    active: Boolean
+}
+
+input PartInput {
+    partId: String!
+    date: String!
+    reason: String!
+    type: String
+    finished: Boolean
+    notFinishedReason: String
+    employeeId: Int!
+    customerId: Int!
+}
+
+input PartInputUpdate {
+    id: Int!
+    partId: String!
+    date: String!
+    reason: String!
+    type: String
+    finished: Boolean
+    notFinishedReason: String
+    employeeId: Int!
+    customerId: Int!
+}
+
+type FilteredParts {
+    rows: [Part]
+    count: Int
+}
+
+# The "Query" type is the root of all GraphQL queries.
+# (A "Mutation" type will be covered later on.)
+type Query {
+    part(partId: String!, customerId: Int): Part
+    parts(filters: [Filter]!, options: Options!): FilteredParts
+}
+
+type Mutation {
+    addPart(part: PartInput!): Part
+    updatePart(part: PartInputUpdate!): Part
+}
