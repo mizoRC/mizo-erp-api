@@ -40,7 +40,6 @@ const resolvers = {
             return order;
         },
         orders: async (root, { filters, options }, context) => {
-            console.log('FILTERS', filters);
             const employee = await getEmployeeFromJWT(context.req);
             const company = await employee.getCompany();
 
