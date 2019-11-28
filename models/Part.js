@@ -19,6 +19,10 @@ const Part = sequelize.define("part",
             type: DataTypes.DATE,
             allowNull: false
         },
+        address: {
+            type: DataTypes.TEXT,
+            defaultValue: ""
+        },
         reason: {
             type: DataTypes.TEXT,
             defaultValue: ""
