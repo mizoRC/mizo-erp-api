@@ -2,6 +2,7 @@ type Part {
     id: Int
     partId: String
     date: String
+    address: String
     reason: String
     type: String
     finished: Boolean
@@ -17,6 +18,7 @@ type Part {
 input PartInput {
     partId: String!
     date: String!
+    address: String!
     reason: String!
     type: String
     finished: Boolean
@@ -29,6 +31,7 @@ input PartInputUpdate {
     id: Int!
     partId: String!
     date: String!
+    address: String!
     reason: String!
     type: String
     finished: Boolean
