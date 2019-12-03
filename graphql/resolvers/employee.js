@@ -4,6 +4,7 @@ import { Op } from 'sequelize';
 import { buildEmployeeRegisterBody, send } from '../../utils/emails';
 import { Employee, Company } from '../../models/CompanyEmployee';
 import { getEmployeeFromJWT } from '../../utils/auth';
+import { ROLES } from '../../constants';
 import logger from '../../utils/logger';
 
 const resolvers = {
@@ -21,6 +22,13 @@ const resolvers = {
 
             const employees = await company.getEmployees({ where: { [Op.and]: [ { id: { [Op.not]: employee.id } }, { active: true } ]}});
             return employees;
+        },
+        technicians: async (root, {  }, context) => {
+            const employee = await getEmployeeFromJWT(context.req);
+            const company = await employee.getCompany();
+
+            const technicians = await company.getEmployees({ where: { [Op.and]: [ { id: { [Op.not]: employee.id } }, { active: true }, { role: ROLES.TECHNICIAN} ]}});
+            return technicians;
         }
 	},
 	Mutation: {
