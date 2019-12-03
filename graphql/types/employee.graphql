@@ -42,6 +42,7 @@ input EmployeeInputUpdate {
 type Query {
     me: Employee
     employees: [Employee]
+    technicians: [Employee]
 }
 
 type Mutation {
