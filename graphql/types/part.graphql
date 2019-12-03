@@ -4,7 +4,7 @@ type Part {
     date: String
     address: String
     reason: String
-    type: String
+    type: ServiceType
     finished: Boolean
     notFinishedReason: String
     employeeId: Int
@@ -15,12 +15,26 @@ type Part {
     active: Boolean
 }
 
+type ServiceType {
+    mounting: Boolean
+    maintenance: Boolean
+    repair: Boolean
+    others: Boolean
+}
+
+input ServiceTypeInput {
+    mounting: Boolean!
+    maintenance: Boolean!
+    repair: Boolean!
+    others: Boolean!
+}
+
 input PartInput {
     partId: String!
     date: String!
     address: String!
     reason: String!
-    type: String
+    type: ServiceTypeInput!
     finished: Boolean
     notFinishedReason: String
     employeeId: Int!
@@ -33,7 +47,7 @@ input PartInputUpdate {
     date: String!
     address: String!
     reason: String!
-    type: String
+    type: ServiceTypeInput!
     finished: Boolean
     notFinishedReason: String
     employeeId: Int!

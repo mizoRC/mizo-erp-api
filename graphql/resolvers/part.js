@@ -54,15 +54,6 @@ const resolvers = {
                             customerParams = {
                                 name: {[Op.iLike]: `%${filter.value}%`}
                             }
-
-                            if(employee.role !== ROLES.TECHNICIAN){
-                                employeeParams = {
-                                    [Op.or]: [
-                                        {name: {[Op.iLike]: `%${filter.value}%`}},
-                                        {surname: {[Op.iLike]: `%${filter.value}%`}}
-                                    ]
-                                }
-                            }
                         }
                     }
                 }
@@ -70,11 +61,21 @@ const resolvers = {
                     const fromDate = new Date(`${filter.value} 02:00:00`);
                     const toDate = moment(fromDate).add(1, 'days').toDate();
 
-                    dateParams = {creationDate: {
+                    dateParams = {date: {
                         [Op.lt]: toDate,
                         [Op.gt]: fromDate
                     }}
                 }
+                /* else if(filter.field === 'employee'){
+                    if(employee.role !== ROLES.TECHNICIAN){
+                        employeeParams = {
+                            [Op.or]: [
+                                {name: {[Op.iLike]: `%${filter.value}%`}},
+                                {surname: {[Op.iLike]: `%${filter.value}%`}}
+                            ]
+                        }
+                    }
+                } */
             });
 
             let whereAndArray = [
@@ -133,12 +134,14 @@ const resolvers = {
                 const JWTemployee = await getEmployeeFromJWT(context.req);
                 const company = await JWTemployee.getCompany();
 
+                // const jsonType = JSON.parse(part.type);
+
                 const newPart = {
                     ...part,
                     companyId: company.id
                 };
 
-                const createdPart = await Order.create(newPart);
+                const createdPart = await Part.create(newPart);
                 return createdPart;
 			} catch (error) {
 				throw new Error(error);
