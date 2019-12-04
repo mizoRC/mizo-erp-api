@@ -39,7 +39,6 @@ const resolvers = {
 
             let searchParams;
             let customerParams;
-            let employeeParams;
             let dateParams;
             filters.forEach(filter => {
                 if(filter.field === 'search'){
@@ -66,16 +65,6 @@ const resolvers = {
                         [Op.gt]: fromDate
                     }}
                 }
-                /* else if(filter.field === 'employee'){
-                    if(employee.role !== ROLES.TECHNICIAN){
-                        employeeParams = {
-                            [Op.or]: [
-                                {name: {[Op.iLike]: `%${filter.value}%`}},
-                                {surname: {[Op.iLike]: `%${filter.value}%`}}
-                            ]
-                        }
-                    }
-                } */
             });
 
             let whereAndArray = [
@@ -156,6 +145,7 @@ const resolvers = {
 
                 if(dbPart){
                     dbPart.date = part.date;
+                    dbPart.address = part.address;
                     dbPart.reason = part.reason;
                     dbPart.type = part.type;
                     dbPart.finished = part.finished;
