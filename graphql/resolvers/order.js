@@ -139,14 +139,33 @@ const resolvers = {
                     employeeId: JWTemployee.id
                 };
 
-                const createdOrder = await Order.create(newOrder, {
-                    include: [{
+                let includeParams = [
+                    {
                         model: Line,
                         as: 'lines'
-                    }]
+                    }
+                ];
+
+                if(!!newOrder.customerId){
+                    includeParams.push({
+                        model: Customer,
+                        as: 'customer',
+                        where: {id: newOrder.customerId}
+                    })
+                }
+
+                const createdOrder = await Order.create(newOrder, {
+                    include: includeParams
                 });
 
-                app.settings.pubsub.publish('orderAdded', {orderAdded: createdOrder});
+                const customer = await createdOrder.getCustomer();
+                let plainCustomer;
+                if(customer) plainCustomer = await customer.toJSON();
+
+                let plainOrder = await createdOrder.toJSON();
+                plainOrder.customer = plainCustomer;
+
+                app.settings.pubsub.publish('orderAdded', {orderAdded: plainOrder});
 
                 return createdOrder;
 			} catch (error) {
@@ -157,9 +176,7 @@ const resolvers = {
 	Subscription: {
 		orderAdded: {
 			subscribe: withFilter(() => app.settings.pubsub.asyncIterator("orderAdded"), (payload, variables) => {
-                console.log('ORDER ADDED', payload);
-                return true;
-                //return payload.participantUpdated.id.toString() === variables.participantId
+                return payload.orderAdded.companyId === variables.companyId;
             })
 		}
 	}

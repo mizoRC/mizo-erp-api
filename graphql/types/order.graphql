@@ -79,5 +79,5 @@ type Mutation {
 }
 
 type Subscription {
-    orderAdded: Order
+    orderAdded(companyId: Int!): FilteredOrder
 }
