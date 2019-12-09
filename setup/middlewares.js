@@ -3,8 +3,6 @@ import { checkIsAuthorized } from '../utils/auth';
 export const authMiddleware = async (req, res, next) => {
     try {
         const publicEndpoints = ["IntrospectionQuery", "translations", "login", "register", "companies", "me"];
-        //TODO AUTH
-        //next();
         //En caso de que la operación sea un endpoint público debemos dejar que siga
         if(publicEndpoints.includes(req.body.operationName)){
             next();
