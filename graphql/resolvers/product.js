@@ -143,7 +143,28 @@ const resolvers = {
             } catch (error) {
                 throw new Error(error);
             }
-        }
+        },
+        excelImport: async (root, { products }, context) => {
+			try {
+                const JWTemployee = await getEmployeeFromJWT(context.req);
+                const company = await JWTemployee.getCompany();
+
+                let newProducts = [];
+                products.forEach(product => {
+                    const newProduct = {
+                        ...product,
+                        companyId: company.id
+                    };
+                    newProducts.push(newProduct);
+                });
+
+                await Product.bulkCreate(newProducts);
+
+                return true;
+			} catch (error) {
+				throw new Error(error);
+			}
+		}
 	}
 };
 

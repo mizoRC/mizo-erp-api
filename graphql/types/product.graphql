@@ -56,4 +56,5 @@ type Mutation {
     addProduct(product: ProductInput!): Product
     updateProduct(product: ProductInputUpdate!): Product
     unsubscribeProduct(productId: Int!): Product
+    excelImport(products:[ProductInput]): Boolean
 }
