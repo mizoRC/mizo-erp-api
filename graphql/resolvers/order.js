@@ -1,3 +1,5 @@
+import { withFilter } from 'apollo-server-express';
+import app from '../../server';
 import { Order, Line } from '../../models/Order';
 import Customer from '../../models/Customer';
 import { Op } from 'sequelize';
@@ -143,10 +145,22 @@ const resolvers = {
                         as: 'lines'
                     }]
                 });
+
+                app.settings.pubsub.publish('orderAdded', {orderAdded: createdOrder});
+
                 return createdOrder;
 			} catch (error) {
 				throw new Error(error);
 			}
+		}
+	},
+	Subscription: {
+		orderAdded: {
+			subscribe: withFilter(() => app.settings.pubsub.asyncIterator("orderAdded"), (payload, variables) => {
+                console.log('ORDER ADDED', payload);
+                return true;
+                //return payload.participantUpdated.id.toString() === variables.participantId
+            })
 		}
 	}
 };

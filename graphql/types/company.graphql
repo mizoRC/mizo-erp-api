@@ -58,7 +58,3 @@ type Mutation {
     addCompany(company:InputCompany!): Company
     updateCompany(updateInfo:UpdateCompanyInfo!): Token
 }
-
-type Subscription {
-    companyAdded: Company
-}

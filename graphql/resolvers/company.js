@@ -76,8 +76,6 @@ const resolvers = {
 			try {
                 const createdCompany = await Company.create(company);
 
-                app.settings.pubsub.publish('companyAdded', {companyAdded: createdCompany});
-
                 return createdCompany;
 			} catch (error) {
 				throw new Error(error);
@@ -106,14 +104,6 @@ const resolvers = {
 			} catch (error) {
 				throw new Error(error);
 			}
-		}
-	},
-	Subscription: {
-		companyAdded: {
-			subscribe: withFilter(() => app.settings.pubsub.asyncIterator("companyAdded"), (payload, variables) => {
-                return true;
-                //return payload.participantUpdated.id.toString() === variables.participantId
-            })
 		}
 	}
 };

@@ -1,3 +1,5 @@
+import { withFilter } from 'apollo-server-express';
+import app from '../../server';
 import Part from '../../models/Part';
 import Customer from '../../models/Customer';
 import { Employee } from '../../models/CompanyEmployee';
@@ -131,6 +133,9 @@ const resolvers = {
                 };
 
                 const createdPart = await Part.create(newPart);
+
+                app.settings.pubsub.publish('partAdded', {partAdded: createdPart});
+                
                 return createdPart;
 			} catch (error) {
 				throw new Error(error);
@@ -154,6 +159,9 @@ const resolvers = {
                     dbPart.customerId = part.customerId;
 
                     const updatedPart = await dbPart.save();
+
+                    app.settings.pubsub.publish('partUpdated', {partUpdated: updatedPart});
+
                     return updatedPart;
                 }
                 else{
@@ -162,6 +170,20 @@ const resolvers = {
 			} catch (error) {
 				throw new Error(error);
 			}
+		}
+	},
+	Subscription: {
+		partAdded: {
+			subscribe: withFilter(() => app.settings.pubsub.asyncIterator("partAdded"), (payload, variables) => {
+                return true;
+                //return payload.participantUpdated.id.toString() === variables.participantId
+            })
+		},
+        partUpdated: {
+			subscribe: withFilter(() => app.settings.pubsub.asyncIterator("partUpdated"), (payload, variables) => {
+                return true;
+                //return payload.participantUpdated.id.toString() === variables.participantId
+            })
 		}
 	}
 };

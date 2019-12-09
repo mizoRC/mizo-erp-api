@@ -70,3 +70,8 @@ type Mutation {
     addPart(part: PartInput!): Part
     updatePart(part: PartInputUpdate!): Part
 }
+
+type Subscription {
+    partAdded: Part
+    partUpdated: Part
+}
