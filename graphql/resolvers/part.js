@@ -134,7 +134,14 @@ const resolvers = {
 
                 const createdPart = await Part.create(newPart);
 
-                app.settings.pubsub.publish('partAdded', {partAdded: createdPart});
+                const customer = await createdPart.getCustomer();
+                let plainCustomer;
+                if(customer) plainCustomer = await customer.toJSON();
+
+                let plainPart = await createdPart.toJSON();
+                plainPart.customer = plainCustomer;
+
+                app.settings.pubsub.publish('partAdded', {partAdded: plainPart});
                 
                 return createdPart;
 			} catch (error) {
@@ -160,7 +167,14 @@ const resolvers = {
 
                     const updatedPart = await dbPart.save();
 
-                    app.settings.pubsub.publish('partUpdated', {partUpdated: updatedPart});
+                    const customer = await updatedPart.getCustomer();
+                    let plainCustomer;
+                    if(customer) plainCustomer = await customer.toJSON();
+
+                    let plainPart = await updatedPart.toJSON();
+                    plainPart.customer = plainCustomer;
+
+                    app.settings.pubsub.publish('partUpdated', {partUpdated: plainPart});
 
                     return updatedPart;
                 }
@@ -175,14 +189,12 @@ const resolvers = {
 	Subscription: {
 		partAdded: {
 			subscribe: withFilter(() => app.settings.pubsub.asyncIterator("partAdded"), (payload, variables) => {
-                return true;
-                //return payload.participantUpdated.id.toString() === variables.participantId
+                return payload.partAdded.employeeId === variables.employeeId;
             })
 		},
         partUpdated: {
 			subscribe: withFilter(() => app.settings.pubsub.asyncIterator("partUpdated"), (payload, variables) => {
-                return true;
-                //return payload.participantUpdated.id.toString() === variables.participantId
+                return payload.partUpdated.employeeId === variables.employeeId;
             })
 		}
 	}

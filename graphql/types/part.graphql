@@ -72,6 +72,6 @@ type Mutation {
 }
 
 type Subscription {
-    partAdded: Part
-    partUpdated: Part
+    partAdded(employeeId: Int!): Part
+    partUpdated(employeeId: Int!): Part
 }
