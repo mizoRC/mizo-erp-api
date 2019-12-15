@@ -5,6 +5,18 @@ import logger from '../utils/logger';
 import { Employee } from '../models/CompanyEmployee';
 const router = express.Router();
 
+router.get('/get', async (req, res) => {
+    try {
+        const img = fs.readFileSync(path.resolve(__dirname, `../resources/logo_email.png`));
+        res.writeHead(200, {'Content-Type': 'image/png' });
+        res.end(img, 'binary');
+    } catch (error) {
+        logger.error(error);
+        res.status(500);
+        res.send();
+    }
+});
+
 router.get('/get/:employeeID', async (req, res) => {
     try {
         const employeeID = req.params.employeeID;
